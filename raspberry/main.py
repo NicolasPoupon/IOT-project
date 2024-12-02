@@ -4,7 +4,8 @@ import numpy as np
 import tensorflow as tf
 from datetime import datetime
 from threading import Thread
-from flask import Flask, jsonify
+from flask import jsonify
+import requests
 
 # Path Configuration
 CAPTURE_PATH = "captured_images"
@@ -14,8 +15,6 @@ MODEL_PATH = "fridge_model.tflite"
 IMAGE_INTERVAL = 10  # seconds
 THRESHOLD_LEVELS = {'milk': 1, 'eggs': 6, 'vegetables': 2}
 
-# Flask App for Inventory Notifications
-app = Flask(__name__)
 inventory = {}
 
 # Load the TFLite Model
@@ -34,8 +33,7 @@ interpreter = load_model(MODEL_PATH)
 
 def preprocess_image(image):
     """Resize, adjust brightness, and normalize the image."""
-    image_resized = cv2.resize(image, (224, 224))
-    image_normalized = image_resized / 255.0
+    image_normalized = image / 255.0
     return image_normalized.astype(np.float32)
 
 # Inference
@@ -58,11 +56,10 @@ def detect_items(image, interpreter):
 
 def parse_detection_output(output_data):
     """Mock function to map model output to detected items."""
-    # Replace this with actual labels and logic for your model.
     labels = ["milk", "eggs", "vegetables"]
     detections = {}
     for i, label in enumerate(labels):
-        detections[label] = output_data[0][i]  # Example logic
+        detections[label] = output_data[0][i]
     return detections
 
 # Image Capture
@@ -94,30 +91,24 @@ def process_image(image_path):
     """Process captured images for detection."""
     image = cv2.imread(image_path)
     detections = detect_items(image, interpreter)
-    update_inventory(detections)
+    send_inventory(detections)
 
 # Inventory Management
 
 
-def update_inventory(detections):
+def send_inventory(detections):
     """Update inventory based on detections."""
     global inventory
-    for item, count in detections.items():
-        inventory[item] = inventory.get(item, 0) + count
-        if inventory[item] < THRESHOLD_LEVELS[item]:
-            notify_low_stock(item)
+    url = "http://127.0.0.1:8000/inventory/api/update-food-items/"
+    headers = {"Content-Type": "application/json"}
 
+    data = detections.items().jsonify()
 
-def notify_low_stock(item):
-    """Notify when stock is low."""
-    print(f"Low stock alert for {item}!")
+    response = requests.post(url, json=data, headers=headers)
 
-# Flask API for Notifications
+    print(response.status_code)
+    print(response.json())  # If the response is JSON formatted
 
-
-@app.route("/inventory", methods=["GET"])
-def get_inventory():
-    return jsonify(inventory)
 
 # Run Image Capture in a Separate Thread
 
@@ -129,4 +120,3 @@ def start_image_capture():
 
 if __name__ == "__main__":
     start_image_capture()
-    app.run(host="0.0.0.0", port=5000)
