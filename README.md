@@ -6,9 +6,21 @@
 
 ## Requirements
 
+### For MacOS and Linux:
+
 ```bash
 cd back
 . myenv/bin/activate
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+### On Windows:
+
+```bash
+cd back
+python -m venv myenv
+myenv\Scripts\activate
 pip install -r requirements.txt
 python manage.py runserver
 ```
