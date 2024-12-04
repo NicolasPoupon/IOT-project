@@ -1,0 +1,7 @@
+c++ --version` gave "[Errno 2] No such file or directory: 'c++'"
+      Running `g++ --version` gave "[Errno 2] No such file or directory: 'g++'"
+      Running `clang++ --version` gave "[Errno 2] No such file or directory: 'clang++'"
+      Running `nvc++ --version` gave "[Errno 2] No such file or directory: 'nvc++'"
+      Running `pgc++ --version` gave "[Errno 2] No such file or directory: 'pgc++'"
+      Running `icpc --version` gave "[Errno 2] No such file or directory: 'icpc'"
+      Running `icpx --version` gave "[Errno 2] No such file or directory: 'icpx'"
