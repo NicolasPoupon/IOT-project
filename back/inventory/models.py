@@ -8,3 +8,12 @@ class FoodItem(models.Model):
 
     def __str__(self):
         return self.name
+
+class WatchedFoodItem(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    threshold = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} (threshold: {self.threshold})"

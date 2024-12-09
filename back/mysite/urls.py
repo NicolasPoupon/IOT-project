@@ -20,5 +20,5 @@ from inventory.views import UpdateFoodItemView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('inventory/', include('inventory.urls')),  # Inclure les URLs de l'application 'inventory'
+    path('inventory/', include('inventory.urls')),
 ]
